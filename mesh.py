@@ -8,7 +8,7 @@ ASCII_FACET = """  facet normal  {face[0]:e}  {face[1]:e}  {face[2]:e}
     endloop
   endfacet"""
 
-def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP']):
+def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP' ]):
     f = open(fn,'rb')
 
     connections = []
@@ -24,7 +24,8 @@ def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP']):
             nelem = int(line.split("=")[-1].strip())
 
         elif "NPOIN" in line:
-            npoin = int(line.split("=")[-1].strip())
+            npoin = int(line.split("=")[-1].split()[-1])
+
     f.close()
     f = open(fn,'rb')
     i=1
@@ -48,12 +49,11 @@ def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP']):
         elif i <= nelem + npoin:
             S = line.split()
             idx = int(S[-1])
-            data = [float(x) for x in S[:-1]]
+            data = [float(x) for x in S[:3]]
             locations[idx] = data
             i+=1
         else:
             break
-
     f.close()
     f = open(fn,'rb')
 
@@ -79,15 +79,17 @@ def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP']):
                     pass
     f.close()
     xyzs = []
-    triangs = []
+    #triangs = []
     c_inners = []
     for m in marker_tags:
         c_inners+=inners[m]
     for vertex in c_inners:
-        triangs.append(vertex)
+
+        #triangs.append(vertex)
         locs = [0,0,0]
         for idx in vertex:
             locs.extend(locations[idx])
+        print locs
         xyzs.append(locs)
 
     return np.array(xyzs)
@@ -115,8 +117,8 @@ def writeSTL(facets, file_name, ascii=True):
     f.close()
 
 
-facets = parse("mesh_ONERAM6_inv.su2")
-writeSTL(facets, "mesh.stl")
+facets = parse("mesh_DLRF6_inv.su2", marker_tags=['PLANE'])
+writeSTL(facets, "mesh2.stl")
 
 
 
