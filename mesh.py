@@ -8,7 +8,7 @@ ASCII_FACET = """  facet normal  {face[0]:e}  {face[1]:e}  {face[2]:e}
     endloop
   endfacet"""
 
-def parse(fn, marker_tags = ['UPPER_SIDE','LOWER_SIDE', 'SYMMETRY_FACE', 'TIP']):
+def parse(fn, marker_tags = ['LOWER_SIDE','UPPER_SIDE',  'TIP']):
     f = open(fn,'rb')
 
     connections = []
@@ -63,6 +63,8 @@ def parse(fn, marker_tags = ['UPPER_SIDE','LOWER_SIDE', 'SYMMETRY_FACE', 'TIP'])
         if "NMARK" in line:
             nmark = int(line.split("=")[-1].strip())
             start = True
+        elif "FFD_NBOX" in line:
+            break
         elif start:
             if "MARKER_TAG" in line:
                 name = line.split()[-1]
@@ -78,7 +80,10 @@ def parse(fn, marker_tags = ['UPPER_SIDE','LOWER_SIDE', 'SYMMETRY_FACE', 'TIP'])
     f.close()
     xyzs = []
     triangs = []
-    for vertex in inners['UPPER_SIDE']+inners['LOWER_SIDE']+inners['TIP']:
+    c_inners = []
+    for m in marker_tags:
+        c_inners+=inners[m]
+    for vertex in c_inners:
         triangs.append(vertex)
         locs = [0,0,0]
         for idx in vertex:
