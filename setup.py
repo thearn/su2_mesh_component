@@ -6,6 +6,14 @@
 
 from setuptools import setup, find_packages
 
+entry_points = """
+[openmdao.parametric_geometry]
+su2_mesh_component.comp.SU2MeshComp = su2_mesh_component.comp:SU2MeshComp
+
+[openmdao.binpub]
+su2_mesh_component.comp.MeshSender = su2_mesh_component.comp:MeshSender
+"""
+
 kwargs = {'author': '',
  'author_email': '',
  'classifiers': ['Intended Audience :: Science/Research',
@@ -13,6 +21,7 @@ kwargs = {'author': '',
  'description': '',
  'download_url': '',
  'include_package_data': True,
+ 'entry_points': entry_points,
  'install_requires': ['openmdao.main'],
  'keywords': ['openmdao'],
  'license': '',

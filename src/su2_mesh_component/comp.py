@@ -1,24 +1,25 @@
-from openmdao.lib.datatypes.api import Str, File
+from openmdao.lib.datatypes.api import Str, File, Geom
 from openmdao.main.api import Component, Assembly, Variable
 
 from openmdao.main.interfaces import IParametricGeometry, implements, IStaticGeometry
 
 
 class SU2MeshComp(Component): 
-    implements(IStaticGeometry)
 
     mesh = Str(iotype="in")
 
-    surface = Variable(iotype="in")
+    surface = Geom(IStaticGeometry, iotype="out")
 
     def execute(self): 
-
+        self.surface = SU2geom()
         #set the surface output to an SU2geom instance
         self.surface.set_fn(self.mesh)
 
 
 
 class SU2geom(Variable):
+
+    implements(IStaticGeometry)
 
     def __init__(self, iotype="out"):
         super(SU2geom, self).__init__(iotype=iotype)
@@ -32,7 +33,6 @@ class SU2geom(Variable):
         #tris = np.array(self.triangles).flatten().astype(np.int32)
 
         xyzs, tris = self.parse(self.fn)
-        #print box
 
         wv.set_face_data(xyzs.flatten(), tris.flatten(), name="surface")
 
